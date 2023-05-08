@@ -1,0 +1,31 @@
+{{ define "base"}}
+    <!doctype html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport"
+              content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, shrink-to-fit=no">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>Blog de Tomasito!</title>
+        {{block "js-editor" .}}
+        {{end}}
+        {{ block "css" .}}
+
+        {{ end }}
+    </head>
+    <body>
+    {{ block "content" . }}
+
+    {{ end }}
+    <footer class="bg-light text-center text-lg-start">
+        <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2);">
+            © 2023 Tomasito:
+            <a class="text-dark" href="/">Blog de Tomasito</a>
+            <a class="text-dark" href="/about-me">sobre mi</a>
+        </div>
+    </footer>
+    {{ block "js" .}}
+    {{ end }}
+    </body>
+    </html>
+{{ end }}

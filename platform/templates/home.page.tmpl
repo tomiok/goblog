@@ -1,0 +1,72 @@
+{{template "base" .}}
+<head>
+    {{define "css"}}
+        <link rel="stylesheet" type="text/css" href="/static/css/styles.css">
+        <title>Technology Blog</title>
+    {{end}}
+</head>
+{{define "content"}}
+    <header>
+        <div class="header-container">
+            <img src="/static/img/tomi.jpg" alt="Profile Picture" class="profile-pic">
+            <h1>Technology Blog </h1>
+            <nav class="social-nav">
+                <a href="https://twitch.tv/tomasitofl" target="_blank">Twitch</a>
+                <a href="https://twitter.com/tomas__fl" target="_blank">Twitter</a>
+                <a href="https://" target="_blank">LinkedIn</a>
+                <a href="/archive" target="_self">Archivo</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="post">
+            <img src="foto.png" alt="Post Image" class="post-image">
+            <h2>Post Title</h2>
+            <p class="post-date">April 30, 2023</p>
+            <p>Post content goes here...</p>
+        </section>
+
+        <section class="post">
+            <img src="tomasito.png" alt="Post Image" class="post-image">
+            <h2>Post Title</h2>
+            <p class="post-date">April 30, 2023</p>
+            <p>Post content goes here...</p>
+        </section>
+
+        <section class="post">
+            <img src="images.png" alt="Post Image" class="post-image">
+            <h2>Post Title</h2>
+            <p class="post-date">April 30, 2023</p>
+            <p>Post content goes here...</p>
+        </section>
+
+        <section class="post">
+            <img src="foto.png" alt="Post Image" class="post-image">
+            <h2>Post Title</h2>
+            <p class="post-date">April 30, 2023</p>
+            <p>Post content goes here...</p>
+        </section>
+
+        <section class="post">
+            <img src="foto.png" alt="Post Image" class="post-image">
+            <h2>Post Title</h2>
+            <p class="post-date">April 29, 2023</p>
+            <p>Post content goes here...</p>
+        </section>
+
+        <section class="post">
+            <img src="foto.png" alt="Post Image" class="post-image">
+            <h2>Post Title</h2>
+            <p class="post-date">April 28, 2023</p>
+            <p>Post content goes here...</p>
+        </section>
+    </main>
+{{end}}
+{{define "js"}}
+    <script src="/static/js/code-parser.js"
+            integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+            crossorigin="anonymous">
+
+    </script>
+{{end}}

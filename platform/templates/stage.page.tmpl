@@ -1,0 +1,6 @@
+{{template "base" .}}
+
+{{define "content"}}
+    {{$draftID := .DraftID}}
+<h1> {{ index .Data $draftID}} </h1>
+{{end}}
