@@ -29,10 +29,11 @@ func newDependencies() *dependencies {
 	session.Cookie.Persist = true
 	session.Cookie.Secure = true // true in prod
 	session.Cookie.SameSite = http.SameSiteStrictMode
-	session.Cookie.Name = "tomi"
+	session.Cookie.Name = "blog-tomasito"
 
 	database := db.NewDatabase()
-	storage := blogS.NewStorage(database)
+	redisClient := db.NewRedisClient()
+	storage := blogS.NewStorage(database, redisClient)
 	service := blog.NewService(storage)
 	handler := blogH.NewHandler(service, session)
 

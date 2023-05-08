@@ -1,7 +1,9 @@
 package blog
 
 import (
+	"context"
 	"crypto/rand"
+	"encoding/json"
 	"goblog/platform/db"
 	"gorm.io/gorm"
 	"math/big"
@@ -30,6 +32,8 @@ type Author struct {
 }
 
 type Storage interface {
+	SaveSession(ctx context.Context, token string, author *Author) error
+
 	CreateAuthor(name, password string) (*Author, error)
 	Authenticate(u, p string) error
 
@@ -74,6 +78,14 @@ func generateRandomString(n int) (string, error) {
 	}
 
 	return string(ret), nil
+}
+
+func (a Author) MarshalBinary() ([]byte, error) {
+	return json.Marshal(a)
+}
+
+func (a *Author) UnmarshalBinary(data []byte) error {
+	return json.Unmarshal(data, &a)
 }
 
 // AutoMigrate for db tables.

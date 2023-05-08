@@ -1,9 +1,11 @@
 package handler
 
 import (
+	"context"
 	"fmt"
 	"github.com/alexedwards/scs/v2"
 	"github.com/gosimple/slug"
+	"github.com/rs/zerolog/log"
 	"goblog/internal/blog"
 	"goblog/platform/render"
 	"goblog/platform/web"
@@ -58,19 +60,21 @@ func (h *Handler) HomeView(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) WriterView(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(h.Token(r.Context()))
-
 	author := h.Get(r.Context(), "savedAuthor")
 	if author == nil {
-		//http.Redirect(w, r, "/", http.StatusSeeOther)
-		//return
-		author = blog.Author{
-			Name:     "",
-			Password: "",
-		}
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+	_loggedAuthor := author.(blog.Author)
+
+	token := h.Token(r.Context())
+	err := h.SaveSession(context.Background(), token, &_loggedAuthor)
+	if err != nil {
+		log.Warn().Msgf("cannot save session: %s", err.Error())
+	} else {
+		log.Info().Msgf("session saved: %s", token)
 	}
 
-	_loggedAuthor := author.(blog.Author)
 	td := render.TemplateData{
 		Data: make(map[string]interface{}),
 	}

@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"goblog/platform/web"
 	"net/http"
 	"os"
@@ -24,6 +25,8 @@ func run() {
 func routes(deps *dependencies) {
 	//middlewares
 	deps.router.Use(web.LoadSession(deps.sessionManager))
+	deps.router.Use(middleware.Logger) // should be before the Recoverer
+	deps.router.Use(middleware.Recoverer)
 
 	deps.router.Get("/ping", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Content-Type", "application/json")
