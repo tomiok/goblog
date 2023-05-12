@@ -3,7 +3,6 @@ package web
 import (
 	"encoding/json"
 	"github.com/alexedwards/scs/v2"
-
 	"net/http"
 )
 
@@ -68,8 +67,25 @@ func ResponseNoContent(w http.ResponseWriter) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
+func RenderErrorPage(w http.ResponseWriter, msg string) {
+	TemplateRender(w, "err.page.tmpl", NewTemplateWithErr(msg))
+}
+
 func LoadSession(sess *scs.SessionManager) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return sess.LoadAndSave(next)
+	}
+}
+
+func Secured(sess *scs.SessionManager) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			token := sess.Token(r.Context())
+			if token != "" {
+				next.ServeHTTP(w, r)
+				return
+			}
+			http.Redirect(w, r, "/authors", http.StatusSeeOther)
+		})
 	}
 }

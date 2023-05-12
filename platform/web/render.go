@@ -1,4 +1,4 @@
-package render
+package web
 
 import (
 	"bytes"
@@ -18,12 +18,21 @@ type TemplateData struct {
 	IsLogged bool
 
 	DraftID string
+
+	ErrMsg string
 }
 
 func NewTemplateData() *TemplateData {
 	return &TemplateData{
 		Data: make(map[string]interface{}),
 		Key:  os.Getenv("TINY_KEY"),
+	}
+}
+
+func NewTemplateWithErr(err string) *TemplateData {
+	return &TemplateData{
+		Data:   make(map[string]interface{}),
+		ErrMsg: err,
 	}
 }
 

@@ -7,7 +7,6 @@ import (
 	"github.com/gosimple/slug"
 	"github.com/rs/zerolog/log"
 	"goblog/internal/blog"
-	"goblog/platform/render"
 	"goblog/platform/web"
 	"net/http"
 	"os"
@@ -28,8 +27,8 @@ func NewHandler(s *blog.Service, session *scs.SessionManager) *Handler {
 }
 
 func (h *Handler) CreateAuthorView(w http.ResponseWriter, r *http.Request) {
-	data := render.NewTemplateData()
-	render.TemplateRender(w, "author-registration.page.tmpl", data)
+	data := web.NewTemplateData()
+	web.TemplateRender(w, "author-registration.page.tmpl", data)
 }
 
 func (h *Handler) CreateAuthorHandler(w http.ResponseWriter, r *http.Request) {
@@ -56,7 +55,7 @@ func (h *Handler) CreateAuthorHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) HomeView(w http.ResponseWriter, r *http.Request) {
-	render.TemplateRender(w, "home.page.tmpl", render.NewTemplateData())
+	web.TemplateRender(w, "home.page.tmpl", web.NewTemplateData())
 }
 
 func (h *Handler) WriterView(w http.ResponseWriter, r *http.Request) {
@@ -75,7 +74,7 @@ func (h *Handler) WriterView(w http.ResponseWriter, r *http.Request) {
 		log.Info().Msgf("session saved: %s", token)
 	}
 
-	td := render.TemplateData{
+	td := web.TemplateData{
 		Data: make(map[string]interface{}),
 	}
 	td.Data["author"] = _loggedAuthor
@@ -83,7 +82,7 @@ func (h *Handler) WriterView(w http.ResponseWriter, r *http.Request) {
 	td.IsLogged = true
 	td.DraftID = "1"
 
-	render.TemplateRender(w, "writer.page.tmpl", &td)
+	web.TemplateRender(w, "writer.page.tmpl", &td)
 }
 
 func (h *Handler) StageHandler(w http.ResponseWriter, r *http.Request) {
@@ -132,12 +131,8 @@ func (h *Handler) StageView(w http.ResponseWriter, r *http.Request) {
 	data := make(map[string]any)
 	data[draftID] = article
 
-	render.TemplateRender(w, "stage.page.tmpl", &render.TemplateData{
+	web.TemplateRender(w, "stage.page.tmpl", &web.TemplateData{
 		Data:    data,
 		DraftID: draftID,
 	})
-}
-
-func (h *Handler) LoginView(w http.ResponseWriter, r *http.Request) {
-	render.TemplateRender(w, "login.page.tmpl", render.NewTemplateData())
 }

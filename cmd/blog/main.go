@@ -41,7 +41,11 @@ func routes(deps *dependencies) {
 	// home.
 	deps.router.Get("/", deps.blogHandler.HomeView)
 
-	// authors related routes,
+	// login.
+	deps.router.Get("/login", deps.blogHandler.LoginView)
+	deps.router.Post("/login", deps.blogHandler.LoginHandler)
+
+	// authors related routes.
 	deps.router.Get("/authors", deps.blogHandler.CreateAuthorView)
 	deps.router.Post("/authors", deps.blogHandler.CreateAuthorHandler)
 

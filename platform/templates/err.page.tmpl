@@ -1,0 +1,7 @@
+{{template "base" .}}
+{{define "content"}}
+    {{$errMessage := .ErrMsg}}
+    <h1> Error during this request</h1>
+    <br>
+    <p>{{$errMessage}}</p>
+{{end}}
