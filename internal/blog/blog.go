@@ -4,7 +4,9 @@ import (
 	"context"
 	"crypto/rand"
 	"encoding/json"
+	"github.com/rs/zerolog/log"
 	"goblog/platform/db"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 	"math/big"
 )
@@ -35,7 +37,7 @@ type Storage interface {
 	SaveSession(ctx context.Context, token string, author *Author) error
 
 	CreateAuthor(name, password string) (*Author, error)
-	Authenticate(u, p string) error
+	Authenticate(u string) (*Author, error)
 
 	CreateArticle(u *Author, a *Article) (*Article, error)
 	FindArticle(slug string) (*Article, error)
@@ -56,9 +58,32 @@ func (s *Service) SaveAuthor(u, p string) (*Author, error) {
 	return s.CreateAuthor(u, p)
 }
 
+func (s *Service) Login(u, p string) (*Author, error) {
+	author, err := s.Authenticate(u)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if err := Decrypt(author.Password, p); err != nil {
+		return nil, err
+	}
+
+	log.Info().Msgf("%s logged in OK", author.Name)
+	return author, nil
+}
+
 func (s *Service) SaveArticle(a *Article) (*Article, error) {
 	a.IsDraft = true
 	return s.CreateArticle(nil, a)
+}
+
+func Encrypt(s string) ([]byte, error) {
+	return bcrypt.GenerateFromPassword([]byte(s), bcrypt.MinCost) // puede ser también defaultCost
+}
+
+func Decrypt(encryptedPassword, plainPassword string) error {
+	return bcrypt.CompareHashAndPassword([]byte(encryptedPassword), []byte(plainPassword))
 }
 
 func GenerateDraftID() string {

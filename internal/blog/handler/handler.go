@@ -137,3 +137,7 @@ func (h *Handler) StageView(w http.ResponseWriter, r *http.Request) {
 		DraftID: draftID,
 	})
 }
+
+func (h *Handler) LoginView(w http.ResponseWriter, r *http.Request) {
+	render.TemplateRender(w, "login.page.tmpl", render.NewTemplateData())
+}

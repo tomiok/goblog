@@ -14,12 +14,18 @@ type Storage struct {
 }
 
 func (s *Storage) CreateAuthor(name, password string) (*blog.Author, error) {
-	author := blog.Author{
-		Name:     name,
-		Password: password,
+	hashedPass, err := blog.Encrypt(password)
+
+	if err != nil {
+		return nil, err
 	}
 
-	err := s.clientDB.DB.Save(&author).Error
+	author := blog.Author{
+		Name:     name,
+		Password: string(hashedPass),
+	}
+
+	err = s.clientDB.DB.Save(&author).Error
 
 	if err != nil {
 		return nil, err
@@ -28,9 +34,15 @@ func (s *Storage) CreateAuthor(name, password string) (*blog.Author, error) {
 	return &author, nil
 }
 
-func (s *Storage) Authenticate(u, p string) error {
-	//TODO implement me
-	panic("implement me")
+func (s *Storage) Authenticate(u string) (*blog.Author, error) {
+	var author blog.Author
+	err := s.clientDB.DB.Find(&author, "Name=?", u).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &author, nil
 }
 
 func (s *Storage) CreateArticle(u *blog.Author, a *blog.Article) (*blog.Article, error) {
