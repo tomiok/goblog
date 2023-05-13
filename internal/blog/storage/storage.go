@@ -70,9 +70,13 @@ func (s *Storage) FindArticle(slug string) (*blog.Article, error) {
 	panic("implement me")
 }
 
-func (s *Storage) DisplayFeed() ([]blog.Article, error) {
-	//TODO implement me
-	panic("implement me")
+func (s *Storage) GetFeed() ([]blog.Article, error) {
+	var articles []blog.Article
+	if err := s.clientDB.Find(&articles, "IsDraft=false").Error; err != nil {
+		return nil, err
+	}
+
+	return articles, nil
 }
 
 func (s *Storage) SaveSession(ctx context.Context, token string, author *blog.AuthorDTO) error {

@@ -8,6 +8,7 @@ import (
 	"goblog/platform/db"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
+	"html/template"
 	"math/big"
 )
 
@@ -23,6 +24,19 @@ type Article struct {
 	DraftID   string
 
 	AuthorID uint
+	Author   Author
+}
+
+type ArticleDTO struct {
+	Title     string
+	Subtitle  string
+	Content   template.HTML
+	Slug      string
+	ImgSource string
+	IsDraft   bool
+	DraftID   string
+
+	Author string
 }
 
 // Author somebody using the blog, for now only for writing.
@@ -47,7 +61,7 @@ type Storage interface {
 
 	CreateArticle(u *Author, a *Article) (*Article, error)
 	FindArticle(slug string) (*Article, error)
-	DisplayFeed() ([]Article, error)
+	GetFeed() ([]Article, error)
 }
 
 type Service struct {
@@ -82,6 +96,11 @@ func (s *Service) Login(u, p string) (*Author, error) {
 func (s *Service) SaveArticle(a *Article) (*Article, error) {
 	a.IsDraft = true
 	return s.CreateArticle(nil, a)
+}
+
+func (s *Service) DisplayFeed() ([]ArticleDTO, error) {
+	//articles := s.GetFeed()
+	return nil, nil
 }
 
 func (a *Author) ToDTO() *AuthorDTO {
