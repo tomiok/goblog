@@ -35,7 +35,7 @@ func (h *Handler) CreateAuthorHandler(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 
 	if err != nil {
-		web.ResponseConflict(w, err.Error())
+		web.RenderErrorPage(w, err.Error())
 		return
 	}
 
@@ -45,7 +45,7 @@ func (h *Handler) CreateAuthorHandler(w http.ResponseWriter, r *http.Request) {
 	savedAuthor, err := h.SaveAuthor(name, password)
 
 	if err != nil {
-		web.ResponseConflict(w, err.Error())
+		web.RenderErrorPage(w, err.Error())
 		return
 	}
 
@@ -55,6 +55,18 @@ func (h *Handler) CreateAuthorHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) HomeView(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	token := h.Token(ctx)
+	author, _ := GetAuthenticated(ctx, token, h.GetSession)
+
+	var isLogged bool
+	if author != nil {
+		isLogged = true
+	}
+	data := web.NewTemplateData()
+
+	data.IsLogged = isLogged
+
 	web.TemplateRender(w, "home.page.tmpl", web.NewTemplateData())
 }
 
@@ -89,13 +101,13 @@ func (h *Handler) StageHandler(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 
 	if err != nil {
-		web.ResponseConflict(w, err.Error())
+		web.RenderErrorPage(w, err.Error())
 		return
 	}
 	author, ok := h.Get(r.Context(), "savedAuthor").(blog.Author)
 
 	if !ok {
-		web.ResponseConflict(w, "invalid type assertion")
+		web.RenderErrorPage(w, "invalid type assertion")
 		return
 	}
 
@@ -116,7 +128,7 @@ func (h *Handler) StageHandler(w http.ResponseWriter, r *http.Request) {
 	a, err := h.SaveArticle(article)
 
 	if err != nil {
-		web.ResponseConflict(w, err.Error())
+		web.RenderErrorPage(w, err.Error())
 		return
 	}
 

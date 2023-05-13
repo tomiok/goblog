@@ -18,7 +18,7 @@ func run() {
 	deps := newDependencies()
 
 	routes(deps)
-	srv := newServer("9000", deps.router)
+	srv := newServer(deps.port, deps.router)
 	srv.Start()
 }
 

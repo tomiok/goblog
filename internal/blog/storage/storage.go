@@ -13,6 +13,17 @@ type Storage struct {
 	clientRedis *redis.Client
 }
 
+func (s *Storage) GetSession(ctx context.Context, token string) (*blog.Author, error) {
+	var author blog.Author
+	err := s.clientRedis.Get(ctx, token).Scan(&author)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &author, nil
+}
+
 func (s *Storage) CreateAuthor(name, password string) (*blog.Author, error) {
 	hashedPass, err := blog.Encrypt(password)
 

@@ -8,6 +8,7 @@ import (
 	blogH "goblog/internal/blog/handler"
 	blogS "goblog/internal/blog/storage"
 	"net/http"
+	"os"
 	"time"
 
 	"goblog/platform/db"
@@ -17,9 +18,12 @@ type dependencies struct {
 	router         *chi.Mux
 	blogHandler    *blogH.Handler
 	sessionManager *scs.SessionManager
+
+	port string
 }
 
 func newDependencies() *dependencies {
+	port := os.Getenv("PORT")
 	gob.Register(blog.Author{})
 	gob.Register(blog.Article{})
 	// session
@@ -43,9 +47,13 @@ func newDependencies() *dependencies {
 		panic(err)
 	}
 
+	if port == "" {
+		port = "9000"
+	}
 	return &dependencies{
 		blogHandler:    handler,
 		sessionManager: session,
 		router:         chi.NewRouter(),
+		port:           port,
 	}
 }

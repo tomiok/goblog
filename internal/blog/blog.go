@@ -35,6 +35,7 @@ type Author struct {
 
 type Storage interface {
 	SaveSession(ctx context.Context, token string, author *Author) error
+	GetSession(ctx context.Context, token string) (*Author, error)
 
 	CreateAuthor(name, password string) (*Author, error)
 	Authenticate(u string) (*Author, error)
