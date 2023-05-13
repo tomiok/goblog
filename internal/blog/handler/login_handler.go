@@ -29,7 +29,7 @@ func (h *Handler) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	h.Put(r.Context(), "savedAuthor", author)
 	token, _, _ := h.SessionManager.Commit(r.Context())
 
-	err = h.SaveSession(r.Context(), token, author)
+	err = h.SaveSession(r.Context(), token, author.ToDTO())
 
 	if err != nil {
 		log.Warn().Err(err).Msg("cannot save session in Redis")

@@ -24,7 +24,7 @@ type TemplateData struct {
 	ErrMsg string
 }
 
-func NewWithAuthor(author *blog.Author) *TemplateData {
+func NewWithAuthor(author *blog.AuthorDTO) *TemplateData {
 	key := os.Getenv("TINY_KEY")
 	data := make(map[string]interface{})
 	if author == nil {
