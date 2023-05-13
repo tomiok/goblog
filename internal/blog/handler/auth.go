@@ -1,16 +1,18 @@
 package handler
 
 import (
-	"context"
 	"goblog/internal/blog"
+	"net/http"
 )
 
-func GetAuthenticated(ctx context.Context, token string, f func(context.Context, string) (*blog.Author, error)) (*blog.Author, error) {
-	author, err := f(ctx, token)
+func GetAuthenticated(r *http.Request, h *Handler) *blog.AuthorDTO {
+	ctx := r.Context()
+	token := h.Token(ctx)
+	author, err := h.GetSession(ctx, token)
 
 	if err != nil {
-		return nil, err
+		return nil
 	}
 
-	return author, nil
+	return author
 }

@@ -49,25 +49,17 @@ func (h *Handler) CreateAuthorHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.Put(r.Context(), "savedAuthor", savedAuthor)
+	h.Put(r.Context(), "savedAuthor", savedAuthor.ToDTO())
 
 	http.Redirect(w, r, "/authors/write", http.StatusSeeOther)
 }
 
 func (h *Handler) HomeView(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-	token := h.Token(ctx)
-	author, _ := GetAuthenticated(ctx, token, h.GetSession)
+	author := GetAuthenticated(r, h)
 
-	var isLogged bool
-	if author != nil {
-		isLogged = true
-	}
-	data := web.NewTemplateData()
+	data := web.NewWithAuthor(author)
 
-	data.IsLogged = isLogged
-
-	web.TemplateRender(w, "home.page.tmpl", web.NewTemplateData())
+	web.TemplateRender(w, "home.page.tmpl", data)
 }
 
 func (h *Handler) WriterView(w http.ResponseWriter, r *http.Request) {
@@ -76,7 +68,7 @@ func (h *Handler) WriterView(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
-	_loggedAuthor := author.(blog.Author)
+	_loggedAuthor := author.(blog.AuthorDTO)
 
 	token := h.Token(r.Context())
 	err := h.SaveSession(context.Background(), token, &_loggedAuthor)

@@ -13,8 +13,8 @@ type Storage struct {
 	clientRedis *redis.Client
 }
 
-func (s *Storage) GetSession(ctx context.Context, token string) (*blog.Author, error) {
-	var author blog.Author
+func (s *Storage) GetSession(ctx context.Context, token string) (*blog.AuthorDTO, error) {
+	var author blog.AuthorDTO
 	err := s.clientRedis.Get(ctx, token).Scan(&author)
 
 	if err != nil {
@@ -75,7 +75,7 @@ func (s *Storage) DisplayFeed() ([]blog.Article, error) {
 	panic("implement me")
 }
 
-func (s *Storage) SaveSession(ctx context.Context, token string, author *blog.Author) error {
+func (s *Storage) SaveSession(ctx context.Context, token string, author *blog.AuthorDTO) error {
 	err := s.clientRedis.Set(ctx, token, author, 24*time.Hour).Err()
 
 	return err

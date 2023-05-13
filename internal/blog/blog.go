@@ -33,9 +33,14 @@ type Author struct {
 	Articles []Article
 }
 
+type AuthorDTO struct {
+	ID   uint
+	Name string
+}
+
 type Storage interface {
-	SaveSession(ctx context.Context, token string, author *Author) error
-	GetSession(ctx context.Context, token string) (*Author, error)
+	SaveSession(ctx context.Context, token string, author *AuthorDTO) error
+	GetSession(ctx context.Context, token string) (*AuthorDTO, error)
 
 	CreateAuthor(name, password string) (*Author, error)
 	Authenticate(u string) (*Author, error)
@@ -79,8 +84,15 @@ func (s *Service) SaveArticle(a *Article) (*Article, error) {
 	return s.CreateArticle(nil, a)
 }
 
+func (a *Author) ToDTO() *AuthorDTO {
+	return &AuthorDTO{
+		ID:   a.ID,
+		Name: a.Name,
+	}
+}
+
 func Encrypt(s string) ([]byte, error) {
-	return bcrypt.GenerateFromPassword([]byte(s), bcrypt.MinCost) // puede ser también defaultCost
+	return bcrypt.GenerateFromPassword([]byte(s), bcrypt.MinCost)
 }
 
 func Decrypt(encryptedPassword, plainPassword string) error {
@@ -106,11 +118,11 @@ func generateRandomString(n int) (string, error) {
 	return string(ret), nil
 }
 
-func (a Author) MarshalBinary() ([]byte, error) {
+func (a AuthorDTO) MarshalBinary() ([]byte, error) {
 	return json.Marshal(a)
 }
 
-func (a *Author) UnmarshalBinary(data []byte) error {
+func (a *AuthorDTO) UnmarshalBinary(data []byte) error {
 	return json.Unmarshal(data, &a)
 }
 

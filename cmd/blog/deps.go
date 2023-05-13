@@ -24,7 +24,7 @@ type dependencies struct {
 
 func newDependencies() *dependencies {
 	port := os.Getenv("PORT")
-	gob.Register(blog.Author{})
+	gob.Register(blog.AuthorDTO{})
 	gob.Register(blog.Article{})
 	// session
 	session := scs.New()

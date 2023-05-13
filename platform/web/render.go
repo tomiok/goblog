@@ -2,10 +2,12 @@ package web
 
 import (
 	"bytes"
+	"goblog/internal/blog"
 	"html/template"
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 
 	"github.com/rs/zerolog/log"
 )
@@ -20,6 +22,23 @@ type TemplateData struct {
 	DraftID string
 
 	ErrMsg string
+}
+
+func NewWithAuthor(author *blog.Author) *TemplateData {
+	key := os.Getenv("TINY_KEY")
+	data := make(map[string]interface{})
+	if author == nil {
+		return &TemplateData{
+			Data: data,
+			Key:  key,
+		}
+	}
+	data[strconv.Itoa(int(author.ID))] = author
+	return &TemplateData{
+		Data:     data,
+		Key:      key,
+		IsLogged: true,
+	}
 }
 
 func NewTemplateData() *TemplateData {
