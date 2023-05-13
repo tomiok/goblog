@@ -4,6 +4,7 @@ import (
 	"github.com/rs/zerolog/log"
 	"goblog/platform/web"
 	"net/http"
+	"strconv"
 )
 
 func (h *Handler) LoginView(w http.ResponseWriter, r *http.Request) {
@@ -26,7 +27,7 @@ func (h *Handler) LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.Put(r.Context(), "savedAuthor", author)
+	h.Put(r.Context(), strconv.Itoa(int(author.ID)), author)
 	token, _, _ := h.SessionManager.Commit(r.Context())
 
 	err = h.SaveSession(r.Context(), token, author.ToDTO())

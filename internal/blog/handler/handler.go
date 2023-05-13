@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"context"
 	"fmt"
 	"github.com/alexedwards/scs/v2"
 	"github.com/gosimple/slug"
@@ -9,7 +8,7 @@ import (
 	"goblog/internal/blog"
 	"goblog/platform/web"
 	"net/http"
-	"os"
+	"strconv"
 )
 
 const articleFmt = "article_%s"
@@ -49,7 +48,12 @@ func (h *Handler) CreateAuthorHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.Put(r.Context(), "savedAuthor", savedAuthor.ToDTO())
+	h.Put(r.Context(), strconv.Itoa(int(savedAuthor.ID)), savedAuthor.ToDTO())
+	token, _, _ := h.Commit(r.Context())
+	err = h.SaveSession(r.Context(), token, savedAuthor.ToDTO())
+	if err != nil {
+		log.Warn().Err(err).Msg("cannot save session in Redis")
+	}
 
 	http.Redirect(w, r, "/authors/write", http.StatusSeeOther)
 }
@@ -63,30 +67,14 @@ func (h *Handler) HomeView(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) WriterView(w http.ResponseWriter, r *http.Request) {
-	author := h.Get(r.Context(), "savedAuthor")
+	author := GetAuthenticated(r, h)
 	if author == nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
-	_loggedAuthor := author.(blog.AuthorDTO)
 
-	token := h.Token(r.Context())
-	err := h.SaveSession(context.Background(), token, &_loggedAuthor)
-	if err != nil {
-		log.Warn().Msgf("cannot save session: %s", err.Error())
-	} else {
-		log.Info().Msgf("session saved: %s", token)
-	}
-
-	td := web.TemplateData{
-		Data: make(map[string]interface{}),
-	}
-	td.Data["author"] = _loggedAuthor
-	td.Key = os.Getenv("TINY_KEY")
-	td.IsLogged = true
-	td.DraftID = "1"
-
-	web.TemplateRender(w, "writer.page.tmpl", &td)
+	data := web.NewWithAuthor(author)
+	web.TemplateRender(w, "writer.page.tmpl", data)
 }
 
 func (h *Handler) StageHandler(w http.ResponseWriter, r *http.Request) {

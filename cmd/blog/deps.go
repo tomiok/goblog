@@ -31,8 +31,8 @@ func newDependencies() *dependencies {
 	session.Lifetime = 24 * time.Hour
 	session.IdleTimeout = 10 * time.Hour
 	session.Cookie.Persist = true
-	session.Cookie.Secure = true // true in prod
-	session.Cookie.SameSite = http.SameSiteStrictMode
+	session.Cookie.Secure = false // true in prod
+	session.Cookie.SameSite = http.SameSiteLaxMode
 	session.Cookie.Name = "blog-tomasito"
 
 	database := db.NewDatabase()
