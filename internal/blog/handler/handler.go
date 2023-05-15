@@ -3,6 +3,7 @@ package handler
 import (
 	"fmt"
 	"github.com/alexedwards/scs/v2"
+	"github.com/go-chi/chi/v5"
 	"github.com/gosimple/slug"
 	"github.com/rs/zerolog/log"
 	"goblog/internal/blog"
@@ -63,6 +64,14 @@ func (h *Handler) HomeView(w http.ResponseWriter, r *http.Request) {
 
 	data := web.NewWithAuthor(author)
 
+	articles, err := h.DisplayFeed()
+
+	if err != nil {
+		log.Error().Msgf("%s", err.Error())
+	}
+
+	data.Data["articles"] = articles
+
 	web.TemplateRender(w, "home.page.tmpl", data)
 }
 
@@ -78,16 +87,16 @@ func (h *Handler) WriterView(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) StageHandler(w http.ResponseWriter, r *http.Request) {
+	author := GetAuthenticated(r, h)
+	if author == nil {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+
 	err := r.ParseForm()
 
 	if err != nil {
 		web.RenderErrorPage(w, err.Error())
-		return
-	}
-	author, ok := h.Get(r.Context(), "savedAuthor").(blog.Author)
-
-	if !ok {
-		web.RenderErrorPage(w, "invalid type assertion")
 		return
 	}
 
@@ -112,14 +121,14 @@ func (h *Handler) StageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.Put(r.Context(), fmt.Sprintf(articleFmt, draftID), a)
+	h.Put(r.Context(), fmt.Sprintf(articleFmt, draftID), a.ToDTO())
 	http.Redirect(w, r, fmt.Sprintf("/stage?rid=%s", draftID), http.StatusSeeOther)
 }
 
 func (h *Handler) StageView(w http.ResponseWriter, r *http.Request) {
 	id := r.URL.Query().Get("rid")
 	draftID := fmt.Sprintf(articleFmt, id)
-	article := h.Get(r.Context(), draftID).(blog.Article)
+	article := h.Get(r.Context(), draftID).(blog.ArticleDTO)
 	data := make(map[string]any)
 	data[draftID] = article
 
@@ -127,4 +136,18 @@ func (h *Handler) StageView(w http.ResponseWriter, r *http.Request) {
 		Data:    data,
 		DraftID: draftID,
 	})
+}
+
+func (h *Handler) PublishHandler(w http.ResponseWriter, r *http.Request) {
+	draftID := chi.URLParam(r, "draftID")
+
+	log.Info().Msgf("draftID: %s", draftID)
+
+	err := h.PublishArticle(draftID)
+
+	if err != nil {
+		log.Error().Msgf("%s", err.Error())
+	}
+
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }

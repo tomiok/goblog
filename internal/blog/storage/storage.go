@@ -72,11 +72,22 @@ func (s *Storage) FindArticle(slug string) (*blog.Article, error) {
 
 func (s *Storage) GetFeed() ([]blog.Article, error) {
 	var articles []blog.Article
-	if err := s.clientDB.Find(&articles, "IsDraft=false").Error; err != nil {
+	if err := s.clientDB.Find(&articles, "is_draft=?", false).Error; err != nil {
 		return nil, err
 	}
 
 	return articles, nil
+}
+
+func (s *Storage) Publish(draftID string) error {
+	var article blog.Article
+
+	if err := s.clientDB.First(&article, "draft_id=?", draftID).Error; err != nil {
+		return err
+	}
+
+	article.IsDraft = true
+	return s.clientDB.Save(&article).Error
 }
 
 func (s *Storage) SaveSession(ctx context.Context, token string, author *blog.AuthorDTO) error {

@@ -10,31 +10,34 @@ import (
 	"gorm.io/gorm"
 	"html/template"
 	"math/big"
+	"time"
 )
 
 // Article is the main entry for the blog post.
 type Article struct {
 	gorm.Model
-	Title     string
-	Subtitle  string
-	Content   string
-	Slug      string
-	ImgSource string
-	IsDraft   bool
-	DraftID   string
+	Title       string
+	Subtitle    string
+	Content     string
+	Slug        string
+	ImgSource   string
+	IsDraft     bool
+	DraftID     string
+	PublishedAt time.Time
 
 	AuthorID uint
 	Author   Author
 }
 
 type ArticleDTO struct {
-	Title     string
-	Subtitle  string
-	Content   template.HTML
-	Slug      string
-	ImgSource string
-	IsDraft   bool
-	DraftID   string
+	Title       string
+	Subtitle    string
+	Content     template.HTML
+	Slug        string
+	ImgSource   string
+	IsDraft     bool
+	DraftID     string
+	PublishedAt time.Time
 
 	Author string
 }
@@ -62,6 +65,7 @@ type Storage interface {
 	CreateArticle(u *Author, a *Article) (*Article, error)
 	FindArticle(slug string) (*Article, error)
 	GetFeed() ([]Article, error)
+	Publish(draftID string) error
 }
 
 type Service struct {
@@ -98,15 +102,44 @@ func (s *Service) SaveArticle(a *Article) (*Article, error) {
 	return s.CreateArticle(nil, a)
 }
 
-func (s *Service) DisplayFeed() ([]ArticleDTO, error) {
-	//articles := s.GetFeed()
-	return nil, nil
+func (s *Service) DisplayFeed() ([]*ArticleDTO, error) {
+	articles, err := s.GetFeed()
+
+	if err != nil {
+		return nil, err
+	}
+
+	var res []*ArticleDTO
+
+	for _, a := range articles {
+		res = append(res, a.ToDTO())
+	}
+
+	return res, nil
+}
+
+func (s *Service) PublishArticle(draftID string) error {
+	return s.Publish(draftID)
 }
 
 func (a *Author) ToDTO() *AuthorDTO {
 	return &AuthorDTO{
 		ID:   a.ID,
 		Name: a.Name,
+	}
+}
+
+func (a *Article) ToDTO() *ArticleDTO {
+	return &ArticleDTO{
+		Title:       a.Title,
+		Subtitle:    a.Subtitle,
+		Content:     template.HTML(a.Content),
+		Slug:        a.Slug,
+		ImgSource:   "",
+		IsDraft:     a.IsDraft,
+		DraftID:     a.DraftID,
+		Author:      a.Author.Name,
+		PublishedAt: a.PublishedAt,
 	}
 }
 

@@ -20,47 +20,15 @@
     </header>
 
     <main>
-        <section class="post">
-            <img src="foto.png" alt="Post Image" class="post-image">
-            <h2>Post Title</h2>
-            <p class="post-date">April 30, 2023</p>
-            <p>Post content goes here...</p>
-        </section>
-
-        <section class="post">
-            <img src="tomasito.png" alt="Post Image" class="post-image">
-            <h2>Post Title</h2>
-            <p class="post-date">April 30, 2023</p>
-            <p>Post content goes here...</p>
-        </section>
-
-        <section class="post">
-            <img src="images.png" alt="Post Image" class="post-image">
-            <h2>Post Title</h2>
-            <p class="post-date">April 30, 2023</p>
-            <p>Post content goes here...</p>
-        </section>
-
-        <section class="post">
-            <img src="foto.png" alt="Post Image" class="post-image">
-            <h2>Post Title</h2>
-            <p class="post-date">April 30, 2023</p>
-            <p>Post content goes here...</p>
-        </section>
-
-        <section class="post">
-            <img src="foto.png" alt="Post Image" class="post-image">
-            <h2>Post Title</h2>
-            <p class="post-date">April 29, 2023</p>
-            <p>Post content goes here...</p>
-        </section>
-
-        <section class="post">
-            <img src="foto.png" alt="Post Image" class="post-image">
-            <h2>Post Title</h2>
-            <p class="post-date">April 28, 2023</p>
-            <p>Post content goes here...</p>
-        </section>
+        {{$articles := index .Data "articles"}}
+        {{range $a := $articles}}
+            <section class="post">
+                <img src="foto.png" alt="Post Image" class="post-image">
+                <h2><a href="/articles/{{$a.Slug}}">{{$a.Title}}</a></h2>
+                <p>{{$a.Subtitle}}</p>
+                <p class="post-date">{{$a.PublishedAt.Format "Jan 02, 2006"}}</p>
+            </section>
+        {{end}}
     </main>
 {{end}}
 {{define "js"}}

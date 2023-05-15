@@ -53,6 +53,8 @@ func routes(deps *dependencies) {
 
 	deps.router.Post("/stage", deps.blogHandler.StageHandler)
 	deps.router.Get("/stage", deps.blogHandler.StageView)
+
+	deps.router.Get("/publish/{draftID}", deps.blogHandler.PublishHandler)
 }
 
 func fileServer(r chi.Router) {

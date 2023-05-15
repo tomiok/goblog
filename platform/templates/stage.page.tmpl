@@ -2,5 +2,12 @@
 
 {{define "content"}}
     {{$draftID := .DraftID}}
-<h1> {{ index .Data $draftID}} </h1>
+    {{$article := index .Data $draftID}}
+    <h1> Estas viendo el draft {{$draftID}} </h1>
+
+    <h2>{{$article.Title}}</h2>
+    <h3>{{$article.Subtitle}}</h3>
+    <p>{{$article.Content}}</p>
+
+    <a href="/publish/{{$draftID}}">Publicar</a>
 {{end}}

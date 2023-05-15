@@ -15,7 +15,7 @@ import (
 var functions = template.FuncMap{}
 
 type TemplateData struct {
-	Data     map[string]interface{}
+	Data     map[string]any
 	Key      string
 	IsLogged bool
 
@@ -61,7 +61,7 @@ func TemplateRender(w http.ResponseWriter, tmpl string, td *TemplateData) {
 	cache, err := TemplateRenderCache()
 
 	if err != nil {
-		log.Fatal().Err(err)
+		log.Error().Msgf("%s", err.Error())
 	}
 
 	t = cache[tmpl]
@@ -76,7 +76,7 @@ func TemplateRender(w http.ResponseWriter, tmpl string, td *TemplateData) {
 	_, err = buf.WriteTo(w)
 
 	if err != nil {
-		log.Error().Err(err)
+		log.Error().Msgf("%s", err.Error())
 	}
 }
 
